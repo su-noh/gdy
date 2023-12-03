@@ -12,11 +12,7 @@ export class CommandEncoder implements ICommandEncoder {
     this.handle = Runtime.createCommandEncoder(descriptor);
   }
 
-  beginRenderPass(
-    descriptor: GPURenderPassDescriptor = {
-      colorAttachments: [Runtime.getDefaultRenderPassColorAttachment()],
-    }
-  ) {
+  beginRenderPass(descriptor: GPURenderPassDescriptor) {
     return new RenderPassEncoder(this, descriptor);
   }
 

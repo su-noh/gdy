@@ -121,18 +121,6 @@ export class Runtime {
   }
 
   /**
-   * Returns the default render pass color attachment.
-   * @returns The default render pass color attachment.
-   */
-  static getDefaultRenderPassColorAttachment(): GPURenderPassColorAttachment {
-    return {
-      view: Runtime.getCurrentTexture().createView(),
-      loadOp: 'clear',
-      storeOp: 'store',
-    };
-  }
-
-  /**
    * Creates a GPU texture with the specified descriptor.
    * @param descriptor - The descriptor for the texture.
    * @returns The created GPU texture.

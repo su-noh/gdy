@@ -41,7 +41,15 @@ export class Triangle {
     new CommandEncoder()
 
       // Begin a render pass.
-      .beginRenderPass()
+      .beginRenderPass({
+        colorAttachments: [
+          {
+            view: Runtime.getCurrentTexture().createView(),
+            loadOp: 'clear',
+            storeOp: 'store',
+          },
+        ],
+      })
 
       // Set the pipeline to use for this render pass.
       .setPipeline(this.pipeline)
