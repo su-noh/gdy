@@ -1,23 +1,23 @@
-import type { IBindGroup } from './bind-group';
-import type { ICommandEncoder } from './command-encoder';
-import type { IRenderPipeline } from './render-pipeline';
+import type { BindGroup } from './bind-group';
+import type { CommandEncoder } from './command-encoder';
+import type { RenderPipeline } from './render-pipeline';
 
 export class RenderPassEncoder {
   readonly handle: GPURenderPassEncoder;
 
   constructor(
-    commandEncoder: ICommandEncoder,
+    readonly commandEncoder: CommandEncoder,
     descriptor: GPURenderPassDescriptor
   ) {
     this.handle = commandEncoder.handle.beginRenderPass(descriptor);
   }
 
-  setPipeline(pipeline: IRenderPipeline): this {
+  setPipeline(pipeline: RenderPipeline): this {
     this.handle.setPipeline(pipeline.handle);
     return this;
   }
 
-  setBindGroup(index: number, bindGroup: IBindGroup): this {
+  setBindGroup(index: number, bindGroup: BindGroup): this {
     this.handle.setBindGroup(index, bindGroup.handle);
     return this;
   }
@@ -56,6 +56,6 @@ export class RenderPassEncoder {
 
   end() {
     this.handle.end();
-    return this;
+    return this.commandEncoder;
   }
 }

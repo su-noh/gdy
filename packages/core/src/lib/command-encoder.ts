@@ -8,11 +8,15 @@ export interface ICommandEncoder {
 export class CommandEncoder implements ICommandEncoder {
   readonly handle: GPUCommandEncoder;
 
-  constructor(descriptor: GPUCommandEncoderDescriptor) {
+  constructor(descriptor?: GPUCommandEncoderDescriptor) {
     this.handle = Runtime.createCommandEncoder(descriptor);
   }
 
-  beginRenderPass(descriptor: GPURenderPassDescriptor) {
+  beginRenderPass(
+    descriptor: GPURenderPassDescriptor = {
+      colorAttachments: [Runtime.getDefaultRenderPassColorAttachment()],
+    }
+  ) {
     return new RenderPassEncoder(this, descriptor);
   }
 

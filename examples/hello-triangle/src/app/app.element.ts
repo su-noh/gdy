@@ -1,22 +1,20 @@
 /// <reference types="@webgpu/types" />
 import './app.style.css';
-import { Runtime } from '@gdy/runtime';
+
+import { Runtime, RuntimeOptions } from '@gdy/runtime';
+import { CommandEncoder, RenderPipeline, ShaderModule } from '@gdy/core';
 
 import vert from '../assets/triangle.vert.wgsl?raw';
 import frag from '../assets/triangle.frag.wgsl?raw';
-import { RenderPipeline, ShaderModule } from '@gdy/core';
 
 export class Triangle {
-  static async create() {
-    await Runtime.initialize({
-      canvas: <HTMLCanvasElement>document.getElementById('canvas'),
-      gpuRequestAdapterOptions: { powerPreference: 'high-performance' },
-    });
+  readonly pipeline: RenderPipeline;
 
+  constructor() {
     const shader_vert = new ShaderModule({ code: vert });
     const shader_frag = new ShaderModule({ code: frag });
 
-    const { handle } = new RenderPipeline({
+    this.pipeline = new RenderPipeline({
       layout: 'auto',
       vertex: {
         module: shader_vert.handle,
@@ -32,36 +30,40 @@ export class Triangle {
       },
     });
 
-    return new Triangle(handle);
-  }
+    const canvas = Runtime.getCanvas();
 
-  constructor(readonly pipeline: GPURenderPipeline) {
-    Runtime.getCanvas().addEventListener('resize', () => {
-      this.draw();
-    });
+    // Resize the canvas to fill the screen.
+    canvas.addEventListener('resize', this.draw.bind(this));
   }
 
   draw() {
-    const commandEncoder = Runtime.createCommandEncoder();
+    // Create a command encoder and pass it to our render pass.
+    new CommandEncoder()
 
-    const renderPassEncoder = commandEncoder.beginRenderPass({
-      colorAttachments: [
-        {
-          view: Runtime.getCurrentTexture().createView(),
-          loadOp: 'clear',
-          storeOp: 'store',
-        },
-      ],
-    });
+      // Begin a render pass.
+      .beginRenderPass()
 
-    renderPassEncoder.setPipeline(this.pipeline);
-    renderPassEncoder.draw(3);
-    renderPassEncoder.end();
+      // Set the pipeline to use for this render pass.
+      .setPipeline(this.pipeline)
+      .draw(3)
+      .end()
 
-    Runtime.submit([commandEncoder.finish()]);
+      // Submit the command encoder to the GPU.
+      .submit();
   }
 }
 
-Triangle.create().then((triangle) => {
+const runtimeOptions: RuntimeOptions = {
+  canvas: <HTMLCanvasElement>document.getElementById('canvas'),
+  gpuRequestAdapterOptions: { powerPreference: 'high-performance' },
+};
+
+async function main() {
+  await Runtime.initialize(runtimeOptions);
+
+  const triangle = new Triangle();
+
   triangle.draw();
-});
+}
+
+main();
