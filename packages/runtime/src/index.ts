@@ -1,12 +1,33 @@
+/**
+ * Represents the options for the runtime.
+ */
+/**
+ * Represents the options for the runtime.
+ */
 export interface RuntimeOptions {
+  /**
+   * The canvas element to be used by the runtime.
+   */
   canvas?: HTMLCanvasElement;
+
+  /**
+   * The options for requesting a GPU adapter.
+   */
   gpuRequestAdapterOptions?: GPURequestAdapterOptions;
+
+  /**
+   * The descriptor for the GPU device.
+   */
   gpuDeviceDescriptor?: GPUDeviceDescriptor;
+
+  /**
+   * The alpha mode for the canvas.
+   */
   alphaMode?: GPUCanvasAlphaMode;
 }
 
 /**
- * Represents a runtime environment for GPU-accelerated rendering.
+ * Represents the runtime for GPU rendering.
  */
 export class Runtime {
   private static _canvas: HTMLCanvasElement | null = null;
@@ -19,6 +40,8 @@ export class Runtime {
    * Initializes the GPU rendering context by requesting the GPU adapter and device,
    * creating a canvas element, and configuring the GPU canvas context.
    * Also sets up a resize observer to handle canvas resizing.
+   *
+   * @param options - The options for initializing the runtime.
    */
   static async initialize(options: RuntimeOptions = {}) {
     this._format = navigator.gpu.getPreferredCanvasFormat();
@@ -63,6 +86,7 @@ export class Runtime {
 
   /**
    * Retrieves the device instance.
+   *
    * @returns The device instance.
    * @throws {Error} If the runtime is not initialized.
    */
@@ -76,6 +100,7 @@ export class Runtime {
 
   /**
    * Gets the format of the runtime.
+   *
    * @returns The format of the runtime.
    * @throws {Error} If the runtime is not initialized.
    */
@@ -87,6 +112,11 @@ export class Runtime {
     return this._format;
   }
 
+  /**
+   * Gets the size of the runtime.
+   *
+   * @returns The size of the runtime.
+   */
   static get size(): GPUExtent3DStrict {
     return [this.canvas.width, this.canvas.height];
   }
@@ -117,6 +147,7 @@ export class Runtime {
 
   /**
    * Gets the current context.
+   *
    * @returns The current context.
    * @throws {Error} If the runtime is not initialized.
    */
@@ -130,6 +161,7 @@ export class Runtime {
 
   /**
    * Returns the current texture.
+   *
    * @returns The current texture.
    */
   static get currentTexture() {
