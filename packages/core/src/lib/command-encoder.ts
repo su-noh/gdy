@@ -9,7 +9,7 @@ export class CommandEncoder implements ICommandEncoder {
   readonly handle: GPUCommandEncoder;
 
   constructor(descriptor?: GPUCommandEncoderDescriptor) {
-    this.handle = Runtime.createCommandEncoder(descriptor);
+    this.handle = Runtime.device.createCommandEncoder(descriptor);
   }
 
   beginRenderPass(descriptor: GPURenderPassDescriptor) {
@@ -17,6 +17,6 @@ export class CommandEncoder implements ICommandEncoder {
   }
 
   submit(): void {
-    Runtime.submit([this.handle.finish()]);
+    Runtime.queue.submit([this.handle.finish()]);
   }
 }

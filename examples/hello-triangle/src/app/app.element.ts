@@ -11,7 +11,7 @@ export class Triangle {
   private renderTarget: GDY.Texture;
 
   constructor() {
-    const canvas = GDY.Runtime.getCanvas();
+    const canvas = GDY.Runtime.canvas;
 
     const sampleCount = 4;
 
@@ -62,7 +62,7 @@ export class Triangle {
         colorAttachments: [
           {
             view: this.renderTarget.getViewInstance(),
-            resolveTarget: GDY.Runtime.getCurrentTexture().createView(),
+            resolveTarget: GDY.Runtime.currentTexture.createView(),
             loadOp: 'clear',
             storeOp: 'discard',
             clearValue: { r: 0, g: 0, b: 0, a: 1 },

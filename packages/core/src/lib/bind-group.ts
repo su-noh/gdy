@@ -8,6 +8,6 @@ export class BindGroup implements IBindGroup {
   readonly handle: GPUBindGroup;
 
   constructor(descriptor: GPUBindGroupDescriptor) {
-    this.handle = Runtime.createBindGroup(descriptor);
+    this.handle = Runtime.device.createBindGroup(descriptor);
   }
 }

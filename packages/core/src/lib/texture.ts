@@ -77,7 +77,7 @@ export class Texture {
   private _viewInstance: GPUTextureView | null = null;
 
   constructor(protected descriptor: GPUTextureDescriptor) {
-    const texture = Runtime.createTexture(descriptor);
+    const texture = Runtime.device.createTexture(descriptor);
 
     this._handle = texture;
   }
@@ -101,7 +101,7 @@ export class Texture {
 
     const size: GPUExtent3DStrict = [this._handle.width, this._handle.height];
 
-    Runtime.copyExternalImageToTexture(source, destination, size);
+    Runtime.queue.copyExternalImageToTexture(source, destination, size);
 
     return this;
   }
@@ -117,7 +117,7 @@ export class Texture {
 
     this.descriptor.size = size;
 
-    const texture = Runtime.createTexture(this.descriptor);
+    const texture = Runtime.device.createTexture(this.descriptor);
 
     this._handle.destroy();
     this._handle = texture;

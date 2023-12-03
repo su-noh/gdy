@@ -4,6 +4,6 @@ export class ShaderModule {
   readonly handle: GPUShaderModule;
 
   constructor(descriptor: GPUShaderModuleDescriptor) {
-    this.handle = Runtime.createShaderModule(descriptor);
+    this.handle = Runtime.device.createShaderModule(descriptor);
   }
 }

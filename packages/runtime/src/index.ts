@@ -41,11 +41,11 @@ export class Runtime {
           const height = entry.contentBoxSize[0].blockSize;
           canvas.width = Math.max(
             1,
-            Math.min(width, this.getDevice().limits.maxTextureDimension2D)
+            Math.min(width, this.device.limits.maxTextureDimension2D)
           );
           canvas.height = Math.max(
             1,
-            Math.min(height, this.getDevice().limits.maxTextureDimension2D)
+            Math.min(height, this.device.limits.maxTextureDimension2D)
           );
           canvas.dispatchEvent(new Event('resize'));
         }
@@ -66,7 +66,7 @@ export class Runtime {
    * @returns The device instance.
    * @throws {Error} If the runtime is not initialized.
    */
-  private static getDevice() {
+  static get device() {
     if (this._device === null) {
       throw new Error('Runtime not initialized');
     }
@@ -88,55 +88,7 @@ export class Runtime {
   }
 
   static get size(): GPUExtent3DStrict {
-    const canvas = this.getCanvas();
-    return [canvas.width, canvas.height];
-  }
-
-  /**
-   * Creates a GPU buffer with the specified descriptor.
-   * @param descriptor - The descriptor for the buffer.
-   * @returns The created GPU buffer.
-   */
-  static createBuffer(descriptor: GPUBufferDescriptor) {
-    return this.getDevice().createBuffer(descriptor);
-  }
-
-  /**
-   * Writes data to a GPU buffer at the specified offset.
-   *
-   * @param buffer - The GPU buffer to write data to.
-   * @param bufferOffset - The offset within the buffer to start writing data.
-   * @param data - The data to write to the buffer.
-   * @param dataOffset - The offset within the data to start writing from. Optional.
-   * @param size - The number of bytes to write. Optional.
-   */
-  static writeBuffer(
-    buffer: GPUBuffer,
-    bufferOffset: GPUSize64,
-    data: BufferSource | SharedArrayBuffer,
-    dataOffset?: GPUSize64,
-    size?: GPUSize64
-  ) {
-    this.getQueue().writeBuffer(buffer, bufferOffset, data, dataOffset, size);
-  }
-
-  /**
-   * Creates a GPUCommandEncoder with the specified descriptor.
-   * If no descriptor is provided, the default descriptor is used.
-   * @param descriptor - The descriptor for the command encoder.
-   * @returns A GPUCommandEncoder object.
-   */
-  static createCommandEncoder(descriptor?: GPUCommandEncoderDescriptor) {
-    return this.getDevice().createCommandEncoder(descriptor);
-  }
-
-  /**
-   * Creates a GPU texture with the specified descriptor.
-   * @param descriptor - The descriptor for the texture.
-   * @returns The created GPU texture.
-   */
-  static createTexture(descriptor: GPUTextureDescriptor) {
-    return this.getDevice().createTexture(descriptor);
+    return [this.canvas.width, this.canvas.height];
   }
 
   /**
@@ -146,7 +98,7 @@ export class Runtime {
    * @returns The canvas element.
    * @throws Error if the runtime is not initialized.
    */
-  static getCanvas() {
+  static get canvas() {
     if (this._canvas === null) {
       throw new Error('Runtime not initialized');
     }
@@ -159,8 +111,8 @@ export class Runtime {
    *
    * @returns The queue from the device.
    */
-  private static getQueue() {
-    return this.getDevice().queue;
+  static get queue() {
+    return this.device.queue;
   }
 
   /**
@@ -168,7 +120,7 @@ export class Runtime {
    * @returns The current context.
    * @throws {Error} If the runtime is not initialized.
    */
-  private static getContext() {
+  static get context() {
     if (this._context === null) {
       throw new Error('Runtime not initialized');
     }
@@ -180,58 +132,7 @@ export class Runtime {
    * Returns the current texture.
    * @returns The current texture.
    */
-  static getCurrentTexture() {
-    return this.getContext().getCurrentTexture();
-  }
-
-  /**
-   * Creates a shader module using the provided descriptor.
-   * @param descriptor - The descriptor for the shader module.
-   * @returns The created shader module.
-   */
-  static createShaderModule(descriptor: GPUShaderModuleDescriptor) {
-    return this.getDevice().createShaderModule(descriptor);
-  }
-
-  /**
-   * Creates a bind group using the provided descriptor.
-   * @param descriptor - The descriptor for the bind group.
-   * @returns The created bind group.
-   */
-  static createBindGroup(descriptor: GPUBindGroupDescriptor) {
-    return this.getDevice().createBindGroup(descriptor);
-  }
-
-  /**
-   * Copies an external image to a texture.
-   *
-   * @param source - The external image to copy from.
-   * @param destination - The texture to copy to.
-   * @param copySize - The size of the copy operation.
-   */
-  static copyExternalImageToTexture(
-    source: GPUImageCopyExternalImage,
-    destination: GPUImageCopyTextureTagged,
-    copySize: GPUExtent3DStrict
-  ) {
-    this.getQueue().copyExternalImageToTexture(source, destination, copySize);
-  }
-
-  /**
-   * Creates a render pipeline with the specified descriptor.
-   * @param descriptor - The descriptor for the render pipeline.
-   * @returns The created render pipeline.
-   */
-  static createRenderPipeline(descriptor: GPURenderPipelineDescriptor) {
-    return this.getDevice().createRenderPipeline(descriptor);
-  }
-
-  /**
-   * Submits the given command buffers to the GPU queue for execution.
-   *
-   * @param commandBuffers - An iterable of GPUCommandBuffer objects to be submitted.
-   */
-  static submit(commandBuffers: Iterable<GPUCommandBuffer>) {
-    this.getQueue().submit(commandBuffers);
+  static get currentTexture() {
+    return this.context.getCurrentTexture();
   }
 }

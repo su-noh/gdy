@@ -8,6 +8,6 @@ export class RenderPipeline implements IRenderPipeline {
   readonly handle: GPURenderPipeline;
 
   constructor(descriptor: GPURenderPipelineDescriptor) {
-    this.handle = Runtime.createRenderPipeline(descriptor);
+    this.handle = Runtime.device.createRenderPipeline(descriptor);
   }
 }

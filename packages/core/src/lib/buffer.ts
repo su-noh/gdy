@@ -11,7 +11,7 @@ export class Buffer {
    * @param descriptor - The descriptor for creating the GPU buffer.
    */
   constructor(protected descriptor: GPUBufferDescriptor) {
-    this._handle = Runtime.createBuffer(descriptor);
+    this._handle = Runtime.device.createBuffer(descriptor);
   }
 
   /**
@@ -37,7 +37,7 @@ export class Buffer {
       throw new Error('Buffer is destroyed');
     }
 
-    Runtime.writeBuffer(this._handle, 0, data);
+    Runtime.queue.writeBuffer(this._handle, 0, data);
   }
 
   /**
