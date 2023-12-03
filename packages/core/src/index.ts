@@ -1,3 +1,5 @@
+export * from '@gdy/runtime';
+
 export * from './lib/buffer';
 export * from './lib/bind-group';
 export * from './lib/command-encoder';

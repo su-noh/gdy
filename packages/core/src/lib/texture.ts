@@ -71,6 +71,11 @@ export class Texture {
    */
   private _source: GPUImageCopyExternalImage | null = null;
 
+  /**
+   * The GPUTextureView associated with the texture.
+   */
+  private _viewInstance: GPUTextureView | null = null;
+
   constructor(protected descriptor: GPUTextureDescriptor) {
     const texture = Runtime.createTexture(descriptor);
 
@@ -115,12 +120,24 @@ export class Texture {
     const texture = Runtime.createTexture(this.descriptor);
 
     this._handle.destroy();
-
     this._handle = texture;
+
+    if (this._viewInstance) {
+      this._viewInstance = this._handle.createView();
+    }
 
     if (this._source) {
       this.copy(this._source);
     }
+  }
+
+  /**
+   * Returns the view instance of the texture.
+   * If the view instance is not created yet, it will be created and cached.
+   * @returns The view instance of the texture.
+   */
+  getViewInstance() {
+    return (this._viewInstance ||= this.createView());
   }
 
   /**

@@ -2,6 +2,7 @@ export interface RuntimeOptions {
   canvas?: HTMLCanvasElement;
   gpuRequestAdapterOptions?: GPURequestAdapterOptions;
   gpuDeviceDescriptor?: GPUDeviceDescriptor;
+  alphaMode?: GPUCanvasAlphaMode;
 }
 
 /**
@@ -53,7 +54,11 @@ export class Runtime {
     observer.observe(this._canvas);
 
     this._context = <GPUCanvasContext>this._canvas.getContext('webgpu');
-    this._context.configure({ device: this._device, format: this._format });
+    this._context.configure({
+      device: this._device,
+      format: this._format,
+      alphaMode: options.alphaMode,
+    });
   }
 
   /**
@@ -74,12 +79,17 @@ export class Runtime {
    * @returns The format of the runtime.
    * @throws {Error} If the runtime is not initialized.
    */
-  static getFormat() {
+  static get format() {
     if (this._format === null) {
       throw new Error('Runtime not initialized');
     }
 
     return this._format;
+  }
+
+  static get size(): GPUExtent3DStrict {
+    const canvas = this.getCanvas();
+    return [canvas.width, canvas.height];
   }
 
   /**

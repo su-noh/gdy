@@ -1,20 +1,33 @@
 /// <reference types="@webgpu/types" />
 import './app.style.css';
 
-import { Runtime, RuntimeOptions } from '@gdy/runtime';
-import { CommandEncoder, RenderPipeline, ShaderModule } from '@gdy/core';
+import * as GDY from '@gdy/core';
 
 import vert from '../assets/triangle.vert.wgsl?raw';
 import frag from '../assets/triangle.frag.wgsl?raw';
 
 export class Triangle {
-  readonly pipeline: RenderPipeline;
+  private pipeline: GDY.RenderPipeline;
+  private renderTarget: GDY.Texture;
 
   constructor() {
-    const shader_vert = new ShaderModule({ code: vert });
-    const shader_frag = new ShaderModule({ code: frag });
+    const canvas = GDY.Runtime.getCanvas();
 
-    this.pipeline = new RenderPipeline({
+    const sampleCount = 4;
+
+    this.renderTarget = new GDY.Texture({
+      size: GDY.Runtime.size,
+      format: GDY.Runtime.format,
+
+      sampleCount: sampleCount,
+
+      usage: GPUTextureUsage.RENDER_ATTACHMENT,
+    });
+
+    const shader_vert = new GDY.ShaderModule({ code: vert });
+    const shader_frag = new GDY.ShaderModule({ code: frag });
+
+    this.pipeline = new GDY.RenderPipeline({
       layout: 'auto',
       vertex: {
         module: shader_vert.handle,
@@ -22,31 +35,37 @@ export class Triangle {
       },
       fragment: {
         module: shader_frag.handle,
-        targets: [{ format: Runtime.getFormat() }],
+        targets: [{ format: GDY.Runtime.format }],
         entryPoint: 'main',
       },
       primitive: {
         topology: 'triangle-list',
       },
+      multisample: {
+        count: sampleCount,
+      },
     });
 
-    const canvas = Runtime.getCanvas();
-
     // Resize the canvas to fill the screen.
-    canvas.addEventListener('resize', this.draw.bind(this));
+    canvas.addEventListener('resize', () => {
+      this.renderTarget.resize([canvas.width, canvas.height]);
+      this.draw();
+    });
   }
 
   draw() {
     // Create a command encoder and pass it to our render pass.
-    new CommandEncoder()
+    new GDY.CommandEncoder()
 
       // Begin a render pass.
       .beginRenderPass({
         colorAttachments: [
           {
-            view: Runtime.getCurrentTexture().createView(),
+            view: this.renderTarget.getViewInstance(),
+            resolveTarget: GDY.Runtime.getCurrentTexture().createView(),
             loadOp: 'clear',
-            storeOp: 'store',
+            storeOp: 'discard',
+            clearValue: { r: 0, g: 0, b: 0, a: 1 },
           },
         ],
       })
@@ -61,13 +80,14 @@ export class Triangle {
   }
 }
 
-const runtimeOptions: RuntimeOptions = {
+const runtimeOptions: GDY.RuntimeOptions = {
   canvas: <HTMLCanvasElement>document.getElementById('canvas'),
   gpuRequestAdapterOptions: { powerPreference: 'high-performance' },
+  alphaMode: 'premultiplied',
 };
 
 async function main() {
-  await Runtime.initialize(runtimeOptions);
+  await GDY.Runtime.initialize(runtimeOptions);
 
   const triangle = new Triangle();
 
