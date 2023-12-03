@@ -1,0 +1,72 @@
+{
+  "name": "examples/hello-triangle",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "examples/hello-triangle/src",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/vite:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/examples/hello-triangle"
+      },
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "mode": "production"
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/vite:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "examples/hello-triangle:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "examples/hello-triangle:build:development",
+          "hmr": true
+        },
+        "production": {
+          "buildTarget": "examples/hello-triangle:build:production",
+          "hmr": false
+        }
+      }
+    },
+    "preview": {
+      "executor": "@nx/vite:preview-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "examples/hello-triangle:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "examples/hello-triangle:build:development"
+        },
+        "production": {
+          "buildTarget": "examples/hello-triangle:build:production"
+        }
+      }
+    },
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{options.reportsDirectory}"],
+      "options": {
+        "passWithNoTests": true,
+        "reportsDirectory": "../../coverage/examples/hello-triangle"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["examples/hello-triangle/**/*.ts"]
+      }
+    }
+  }
+}
